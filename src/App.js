@@ -2,15 +2,10 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import styled from 'styled-components'
 
-import { UIContext } from './shared/context/ui-context'
-import { useUI } from './shared/hooks/ui-hook'
-
 import Categories from './views/Categories/containers/Categories'
 import Photos from './views/Photos/containers/Photos'
 
 function App() {
-  const { overlay, showOverlay } = useUI()
-
   let routes = (
     <Routes>
       <Route path="/gallery/:id" element={<Photos />} />
@@ -19,13 +14,9 @@ function App() {
   )
 
   return (
-    <UIContext.Provider value={{
-      overlay, showOverlay
-    }}>
-      <Container>
-        {routes}
-      </Container>
-    </UIContext.Provider>
+    <Container>
+      {routes}
+    </Container>
   );
 }
 

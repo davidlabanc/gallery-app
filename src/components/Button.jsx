@@ -21,7 +21,7 @@ const BootstrapButton = styled(LoadingButton)`
   border-radius: 10px!important;
   background-color: black !important;
   color: white !important;
-  padding: 10px !important; 
+  padding: 10px 20px !important; 
   min-height: calc(2em + 20px)!important;
   font-weight: 600 !important;
   display: flex;

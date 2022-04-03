@@ -56,13 +56,16 @@ export default Photo
 const SecondaryButton = styled.div`
   width: max-content;
   color: black;
+  text-transform: uppercase;
   display: block;
-  font-size: 1em;
+  font-size: 0.875rem;
+  line-height: 1.75;
   border: 2px solid black;
   background: white;
   border-radius: 10px;
   padding: 10px 20px;
   text-align: center;
+  font-weight: 600;
   cursor: pointer;
   margin-top: 20px;
   transition: all ease-in-out 250ms;

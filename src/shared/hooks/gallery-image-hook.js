@@ -6,13 +6,12 @@ export const useProgressiveImage = (src, placeholder) => {
   const [image, setImage] = useState(null)
   const [place, setPlace] = useState(null)
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!src && !placeholder) {
       return
     }
-    let unmounted = false
 
-    if (!unmounted) {
+    async function fetchPlaceholder() {
       try {
         const placeholder1 = await loadImage(placeholder)
         setPlace(placeholder1)
@@ -20,7 +19,9 @@ export const useProgressiveImage = (src, placeholder) => {
       } catch (error) {
         setPlace(error)
       }
+    }
 
+    async function fetchImage() {
       try {
         const img = await loadImage(src)
         setImage(img)
@@ -28,6 +29,13 @@ export const useProgressiveImage = (src, placeholder) => {
       } catch (error) {
         setImage(error)
       }
+    }
+
+    let unmounted = false
+
+    if (!unmounted) {
+      fetchPlaceholder()
+      fetchImage()
     }
 
     return () => {

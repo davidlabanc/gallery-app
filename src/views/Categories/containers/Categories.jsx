@@ -1,10 +1,13 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from "react-router-dom";
 
 import { useFetch } from '../../../shared/hooks/fetch-hook';
+import { CategoriesContext } from '../../../shared/context/categories-context';
 import { useUI } from '../../../shared/hooks/ui-hook';
+import { url } from '../../../shared/constants/api';
 
 import { Header, Description, Grid, StyledForm, ItemContainer } from '../../../shared/styles/styles'
 import Overlay from '../../../components/Overlay'
@@ -12,17 +15,24 @@ import Button from '../../../components/Button'
 import Category from '../components/Category';
 import Error from '../../../components/Error'
 import FormError from '../../../components/FormError';
-import Success from '../../../components/Success';
 
 function Categories() {
-  const { response, error, sendRequest, appendToResponse } = useFetch()
-  const { response: addCategoryResponse, error: addCategoryError, isLoading: addCategoryLoading, sendRequest: addCategoryRequest } = useFetch()
+  const { error, sendRequest, appendToResponse } = useFetch()
+  const { error: addCategoryError, isLoading: addCategoryLoading, sendRequest: addCategoryRequest } = useFetch()
   const { overlay, showOverlay } = useUI()
   const [formText, setFormText] = useState("")
+  const { response: contextResponse, setResponse } = useContext(CategoriesContext)
+  const navigate = useNavigate();
 
   useEffect(() => {
-    sendRequest({ url: "http://api.programator.sk/gallery", method: "GET" })
-  }, [sendRequest])
+    async function fetchData() {
+      if (!contextResponse) {
+        const data = await sendRequest({ url: `${url}/gallery`, method: "GET" })
+        setResponse(data)
+      }
+    }
+    fetchData()
+  }, [sendRequest, contextResponse, setResponse])
 
   const onSubmit = useCallback(
     async (event) => {
@@ -31,7 +41,7 @@ function Categories() {
       const text = formText.replace('/', '');
 
       const res = await addCategoryRequest({
-        url: "http://api.programator.sk/gallery",
+        url: `${url}/gallery`,
         method: "POST",
         data: { name: text }
       })
@@ -39,9 +49,10 @@ function Categories() {
         appendToResponse({ path: "galleries", data: [res] })
         setFormText('')
         showOverlay()
+        navigate(`/gallery/${text}`)
       }
     },
-    [formText, addCategoryRequest, appendToResponse, showOverlay]
+    [formText, addCategoryRequest, appendToResponse, showOverlay, navigate]
   )
 
   if (error) {
@@ -50,16 +61,15 @@ function Categories() {
 
   return (
     <>
-      {addCategoryResponse && <Success message="Categória bola pridaná"></Success>}
       <Header>Fotogaléria</Header>
       <Description>Kategórie</Description>
       <Grid>
         {
-          response?.galleries.map(({ image = undefined, name, path }) => (
+          contextResponse?.galleries?.map(({ image = undefined, name, path }) => (
             <Category key={name} image={image} name={name} path={path} />
           ))
         }
-        <ItemContainer onClick={() => showOverlay()} last={response?.galleries.length > 0 ? false : true}>
+        <ItemContainer onClick={() => showOverlay()} last={contextResponse?.galleries?.length > 0 ? false : true}>
           <StyledAddCircleOutlineIcon></StyledAddCircleOutlineIcon>
           <ItemContinerText>Pridať kategóriu</ItemContinerText>
         </ItemContainer>

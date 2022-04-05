@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import styled from 'styled-components'
+
+import { CategoriesContext } from './shared/context/categories-context';
 
 import Categories from './views/Categories/containers/Categories'
 import Photos from './views/Photos/containers/Photos'
 
 function App() {
+  const [response, setResponse] = useState(null)
   let routes = (
     <Routes>
       <Route path="/gallery/:id" element={<Photos />} />
@@ -14,9 +17,13 @@ function App() {
   )
 
   return (
-    <Container>
-      {routes}
-    </Container>
+    <CategoriesContext.Provider value={{
+      response, setResponse
+    }}>
+      <Container>
+        {routes}
+      </Container>
+    </CategoriesContext.Provider>
   );
 }
 

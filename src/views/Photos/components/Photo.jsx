@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useUI } from '../../../shared/hooks/ui-hook';
 import { StyledForm } from "../../../shared/styles/styles";
+import { url } from "../../../shared/constants/api";
 
 import Image from '../../../components/Image';
 import Overlay from '../../../components/Overlay'
@@ -25,12 +26,15 @@ function Photo({ image, deleteMode = false, setStartImage = () => { }, index, on
       <ContainerHelper>
         {
           deleteMode && (
-            <CloseContainer onClick={() => showOverlay()} >
-              <StyledDeleteIcon />
-            </CloseContainer>)
+            <CloseContainerHelper>
+              <CloseContainer onClick={() => showOverlay()} >
+                <StyledDeleteIcon />
+              </CloseContainer>
+            </CloseContainerHelper>
+          )
         }
         <ImageContainer onClick={() => !deleteMode ? setStartImage(index) : null} deleteMode={deleteMode}>
-          <Image src={`http://api.programator.sk/images/640x360/${image}`}></Image>
+          <Image src={`${url}/images/640x360/${image}`}></Image>
         </ImageContainer>
       </ContainerHelper>
 
@@ -52,6 +56,17 @@ function Photo({ image, deleteMode = false, setStartImage = () => { }, index, on
 }
 
 export default Photo
+
+const CloseContainerHelper = styled.div`
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const SecondaryButton = styled.div`
   width: max-content;
@@ -87,25 +102,29 @@ const ImageContainer = styled.div`
 `;
 
 const StyledDeleteIcon = styled(DeleteIcon)({
-  fontSize: "1.05em",
+  fontSize: "3rem!important",
   color: "white"
 });
 
 
 const CloseContainer = styled.div`
-  height: 2.5em;
-  width: 2.5em;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background:#931b16;
+
+  height: 5.5em;
+  width: 5.5em;
+  background:#931b16e0;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   z-index: 2;
-  visibility: hidden;
+  color: white;
+  transition: transform ease .3s;
+
+  &:hover {
+    transform: scale(1.2)
+  }
+  
 `;
 const ContainerHelper = styled.div`
   border-radius: 5px;
@@ -114,6 +133,7 @@ const ContainerHelper = styled.div`
   width: 100%;
   aspect-ratio: 1/1;
   position: relative;
+  box-sizing: border-box;
 `;
 
 const Container = styled.div`
@@ -128,7 +148,4 @@ const Container = styled.div`
   overflow: hidden;
   display: flex;
   flex-grow: 1;
-  &:hover ${CloseContainer}{
-    visibility: visible;
-  }
 `;

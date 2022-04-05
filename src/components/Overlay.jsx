@@ -1,10 +1,8 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import CloseIcon from '@mui/icons-material/Close';
 
-
 function Overlay(props) {
-
   if (props.overlay) {
     return (
       <>
@@ -61,6 +59,10 @@ const OverlayBackground = styled.div`
   align-items: center;
   width: 40%;
   z-index: 5;
+
+  @media (max-width: 920px) {
+    width: 80%;
+  }
 `;
 
 const Container = styled.div`

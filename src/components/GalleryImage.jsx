@@ -21,6 +21,7 @@ const Container = styled.div`
   max-height: 100%;
   max-width: 100%;
   overflow: hidden;
+  border-radius: 10px;
 `;
 
 const StyledImage = styled.div`

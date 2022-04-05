@@ -6,10 +6,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import GalleryImage from '../../../components/GalleryImage';
+import { url } from '../../../shared/constants/api';
 
 function Gallery({ startImage = null, images = [], setStartImage }) {
   const [show, setShow] = useState(false)
   const [imageNumber, setImageNumber] = useState(null)
+  const [fired, setFired] = useState(false)
 
   useEffect(() => {
     if (startImage !== null) {
@@ -24,7 +26,7 @@ function Gallery({ startImage = null, images = [], setStartImage }) {
       setShow(false)
       setImageNumber(null)
     },
-    [],
+    [setStartImage]
   )
 
   const handleMoveLeft = useCallback(
@@ -49,8 +51,28 @@ function Gallery({ startImage = null, images = [], setStartImage }) {
     [imageNumber, images]
   )
 
-
   if (show) {
+    if (!fired) {
+      window.document.addEventListener('keydown', (event) => {
+        const keyName = event.key;
+        setFired(true)
+
+        if (keyName === 'ArrowRight') {
+          handleMoveRight()
+        }
+        if (keyName === 'ArrowLeft') {
+          handleMoveLeft()
+        }
+        if (keyName === 'Escape') {
+          handleHide()
+        }
+      }, { once: true });
+    }
+
+    window.document.addEventListener('keyup', () => {
+      setFired(false)
+    }, { once: true });
+
     return (
       <>
         <OverlayClose onClick={() => handleHide()}></OverlayClose>
@@ -66,8 +88,8 @@ function Gallery({ startImage = null, images = [], setStartImage }) {
               <StyledArrowForwardIcon />
             </ArrowContainer>
             <GalleryImage
-              src={`http://api.programator.sk/images/1600x900/${get(images, `[${imageNumber}].fullpath`, undefined)}`}
-              placeholder={`http://api.programator.sk/images/640x360/${get(images, `[${imageNumber}].fullpath`, undefined)}`}
+              src={`${url}/images/1600x900/${get(images, `[${imageNumber}].fullpath`, undefined)}`}
+              placeholder={`${url}/images/640x360/${get(images, `[${imageNumber}].fullpath`, undefined)}`}
               imgHtml={true} />
           </Container>
         </OverlayBackground>
@@ -86,6 +108,7 @@ const CloseContainer = styled.div`
   position: absolute;
   top: 20px;
   right: 20px;
+  
   background: #000000a1;
   border-radius: 50%;
   display: flex;
@@ -109,6 +132,7 @@ const ArrowContainer = styled.div`
   align-items: center;
   cursor: pointer;
   z-index: 3;
+  transform: translate(0, -50%);
 `;
 
 const StyledArrowBackIcon = styled(ArrowBackIcon)({

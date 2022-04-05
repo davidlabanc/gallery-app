@@ -5,20 +5,24 @@ import { loadImage } from '../utils/loadImage'
 export const useProgressiveImage = (src) => {
   const [image, setImage] = useState(null)
 
-  useEffect(async() => {
+  useEffect(() => {
     if (!src) {
       return
     }
-    let unmounted = false
 
-    if (!unmounted) {
+    async function fetchImage() {
       try {
         const img = await loadImage(src)
         setImage(img)
       } catch (error) {
         setImage(error)
       }
+    }
 
+    let unmounted = false
+
+    if (!unmounted) {
+      fetchImage()
     }
 
     return () => {

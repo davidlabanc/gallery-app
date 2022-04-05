@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { Link } from "react-router-dom";
 
+import { url } from "../../../shared/constants/api";
+
 import Image from '../../../components/Image';
 
 
@@ -11,7 +13,7 @@ function Category({ image, name, path }) {
       <ItemContainer>
         <ImageContainer>
           <AnimContainer>
-            <Image src={image ? `http://api.programator.sk/images/480x480/${image?.fullpath}` : undefined}></Image>
+            <Image src={image ? `${url}/images/480x480/${image?.fullpath}` : undefined} aspect_ratio = "4/3"></Image>
           </AnimContainer>
         </ImageContainer>
         <Header>{name}</Header>
@@ -42,7 +44,7 @@ const ImageContainer = styled.div`
   overflow: hidden;
   width: 100%;
   min-width: 200px;
-  aspect-ratio: 1/1;
+  aspect-ratio: 4/3;
 `;
 
 const AnimContainer = styled.div`
@@ -67,7 +69,10 @@ const Header = styled.div`
   font-size: 1.05em;
   padding: 20px;
   text-align: center;
-  flex-grow: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-height: 1.05em;
+  white-space: nowrap;
 
   &::first-letter{
     text-transform: uppercase;

@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { useFetch } from '../../../shared/hooks/fetch-hook';
 import { useUI } from '../../../shared/hooks/ui-hook';
+import { url } from '../../../shared/constants/api';
 
 import { Header, ItemContainer, Grid, StyledForm, LoadingText, LoadingContainer } from '../../../shared/styles/styles'
 import Overlay from '../../../components/Overlay'
@@ -33,7 +34,7 @@ function Photos() {
   const params = useParams()
 
   useEffect(() => {
-    sendRequest({ url: `http://api.programator.sk/gallery/${params.id}`, method: "GET" })
+    sendRequest({ url: `${url}/gallery/${params.id}`, method: "GET" })
   }, [params.id, sendRequest])
 
   const onSubmit = useCallback(
@@ -46,7 +47,7 @@ function Photos() {
         data.append("image", file)
 
         const res = await addPhotoRequest({
-          url: `http://api.programator.sk/gallery/${params.id}`,
+          url: `${url}/gallery/${params.id}`,
           method: "POST",
           data: data,
           headers: {
@@ -69,7 +70,7 @@ function Photos() {
       event.preventDefault()
 
       const res = await deletePhotoRequest({
-        url: `http://api.programator.sk/gallery/${image}`,
+        url: `${url}/gallery/${image}`,
         method: "DELETE",
         headers: {
           'Content-Type': "multipart/form-data"
@@ -173,6 +174,7 @@ function Photos() {
         </ChipContainer>
         <StyledForm onSubmit={(event) => onSubmit(event)}>
           <FileInput files={files} setFiles={setFiles} />
+          {addPhotoError?.status === 400 && <FormError>Nenašli sa žiadne obrázky.</FormError>}
           {addPhotoError?.status === 404 && <FormError>Galéria sa nenašla.</FormError>}
           {addPhotoError?.status === 500 && <FormError>Ooops! Niečo sa pokazilo, skúste znovu neskôr.</FormError>}
           <Button isLoading={addPhotoLoading}>Pridať</Button>
@@ -189,6 +191,7 @@ const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 45px;
 `;
 
 const ChipContainer = styled.div`
@@ -217,7 +220,6 @@ const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
   width: max-content;
-  padding-bottom: 45px;
 `;
 
 const Description = styled.div`

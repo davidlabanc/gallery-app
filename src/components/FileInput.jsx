@@ -14,8 +14,7 @@ function FileInput({ files, setFiles }) {
 
       const new_files = event.target.files ? [...event.target.files] : [...event.dataTransfer.files]
 
-      const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
-      const filesToUpload = new_files.filter(new_file => validImageTypes.includes(new_file.type) && !files.some((file) => file.name === new_file.name))
+      const filesToUpload = new_files.filter(new_file => !files.some((file) => file.name === new_file.name))
 
       setFiles([...files, ...filesToUpload])
 

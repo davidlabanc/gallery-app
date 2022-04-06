@@ -1,11 +1,11 @@
-import React, { useEffect, useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
 
 import { useFetch } from '../../../shared/hooks/fetch-hook';
-import { CategoriesContext } from '../../../shared/context/categories-context';
+import { DataContext } from '../../../shared/context/data-context';
 import { useUI } from '../../../shared/hooks/ui-hook';
 import { url } from '../../../shared/constants/api';
 
@@ -13,26 +13,14 @@ import { Header, Description, Grid, StyledForm, ItemContainer } from '../../../s
 import Overlay from '../../../components/Overlay'
 import Button from '../../../components/Button'
 import Category from '../components/Category';
-import Error from '../../../components/Error'
 import FormError from '../../../components/FormError';
 
 function Categories() {
-  const { error, sendRequest, appendToResponse } = useFetch()
   const { error: addCategoryError, isLoading: addCategoryLoading, sendRequest: addCategoryRequest } = useFetch()
   const { overlay, showOverlay } = useUI()
   const [formText, setFormText] = useState("")
-  const { response: contextResponse, setResponse } = useContext(CategoriesContext)
+  const { data, appendToResponse } = useContext(DataContext)
   const navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchData() {
-      if (!contextResponse) {
-        const data = await sendRequest({ url: `${url}/gallery`, method: "GET" })
-        setResponse(data)
-      }
-    }
-    fetchData()
-  }, [sendRequest, contextResponse, setResponse])
 
   const onSubmit = useCallback(
     async (event) => {
@@ -46,7 +34,8 @@ function Categories() {
         data: { name: text }
       })
       if (res) {
-        appendToResponse({ path: "galleries", data: [res] })
+        appendToResponse({ path: "categories", item: [res] })
+        appendToResponse({ path: "photos", item: [{images: [], gallery: res}] })
         setFormText('')
         showOverlay()
         navigate(`/gallery/${text}`)
@@ -55,21 +44,17 @@ function Categories() {
     [formText, addCategoryRequest, appendToResponse, showOverlay, navigate]
   )
 
-  if (error) {
-    return (<Error></Error>)
-  }
-
   return (
     <>
       <Header>Fotogaléria</Header>
       <Description>Kategórie</Description>
       <Grid>
         {
-          contextResponse?.galleries?.map(({ image = undefined, name, path }) => (
-            <Category key={name} image={image} name={name} path={path} />
+          data.categories?.map(({ image = undefined, name, path }) => (
+            <Category key={name} image={image} name={name} path={path} photos={data.photos}/>
           ))
         }
-        <ItemContainer onClick={() => showOverlay()} last={contextResponse?.galleries?.length > 0 ? false : true}>
+        <ItemContainer onClick={() => showOverlay()} last={data.categories?.length > 0 ? false : true}>
           <StyledAddCircleOutlineIcon></StyledAddCircleOutlineIcon>
           <ItemContinerText>Pridať kategóriu</ItemContinerText>
         </ItemContainer>

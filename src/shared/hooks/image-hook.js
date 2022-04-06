@@ -12,10 +12,22 @@ export const useProgressiveImage = (src) => {
 
     async function fetchImage() {
       try {
+        let unmounted = false
+
         const img = await loadImage(src)
-        setImage(img)
+
+        if (!unmounted) {
+          setImage(img)
+        }
+
+        return () => {
+          unmounted = true;
+          img.cancel()
+        }
       } catch (error) {
-        setImage(error)
+        if (!unmounted) {
+          setImage(error)
+        }
       }
     }
 

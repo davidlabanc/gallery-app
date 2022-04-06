@@ -8,18 +8,39 @@ export const useFetch = () => {
 
   const sendRequest = useCallback(
     async ({ url = undefined, method = "get", data = {} }) => {
-      setError(null)
-      setResponse(null)
-      setIsLoading(true)
+      let unmounted = false, source = axios.CancelToken.source();
 
-      try {
-        const res = await axios({ url, method, data });
-        setResponse(res.data)
-        setIsLoading(false)
-        return res.data
-      } catch (error) {
-        setError(error.response)
-        setIsLoading(false)
+      if (!unmounted) {
+
+        setError(null)
+        setResponse(null)
+        setIsLoading(true)
+
+        try {
+          const res = await axios({
+            url,
+            method,
+            data,
+            cancelToken: source.token,
+            timeout: 5000
+          });
+          if (!unmounted) {
+            setResponse(res.data)
+            setIsLoading(false)
+          }
+
+          return res.data
+        } catch (error) {
+          if (!unmounted) {
+            setError(error.response)
+            setIsLoading(false)
+          }
+        }
+      }
+
+      return () => {
+        unmounted = true;
+        source.cancel("Cancelling in cleanup");
       }
     },
     [],
@@ -41,7 +62,7 @@ export const useFetch = () => {
       if (item && path) {
         let new_array = response[path].filter((image) => image.fullpath !== item)
 
-        setResponse({...response, [path]: new_array})
+        setResponse({ ...response, [path]: new_array })
       }
     },
     [response, setResponse],

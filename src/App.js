@@ -20,8 +20,6 @@ function App() {
       let unmounted = false
       if (!unmounted)
         setPhotos(gallery)
-
-
     },
     [setPhotos]
   )
